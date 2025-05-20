@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Path to SFML cmake config
-set(SFML_DIR "C:/SFML-2.6.2/lib/cmake/SFML")
+set(SFML_DIR "$ENV{SFML_ROOT}/lib/cmake/SFML")
 
 find_package(SFML 2.6 COMPONENTS graphics window audio system REQUIRED)
 
@@ -25,7 +25,7 @@ add_executable(Gaianox
 target_include_directories(Gaianox PRIVATE src)
 
 # Include SFML headers (optional if find_package already does it)
-target_include_directories(Gaianox PRIVATE "C:/SFML-2.6.2/include")
+target_include_directories(Gaianox PRIVATE "$ENV{SFML_ROOT}/include")
 
 # Link SFML libraries
 target_link_libraries(Gaianox PRIVATE
@@ -38,18 +38,18 @@ target_link_libraries(Gaianox PRIVATE
 if(WIN32)
     add_custom_command(TARGET Gaianox POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "C:/SFML-2.6.2/bin/sfml-graphics-2.dll"
+            "$ENV{SFML_ROOT}/bin/sfml-graphics-2.dll"
             $<TARGET_FILE_DIR:Gaianox>)
     add_custom_command(TARGET Gaianox POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "C:/SFML-2.6.2/bin/sfml-window-2.dll"
+            "$ENV{SFML_ROOT}/bin/sfml-window-2.dll"
             $<TARGET_FILE_DIR:Gaianox>)
     add_custom_command(TARGET Gaianox POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "C:/SFML-2.6.2/bin/sfml-audio-2.dll"
+            "$ENV{SFML_ROOT}/bin/sfml-audio-2.dll"
             $<TARGET_FILE_DIR:Gaianox>)
     add_custom_command(TARGET Gaianox POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "C:/SFML-2.6.2/bin/sfml-system-2.dll"
+            "$ENV{SFML_ROOT}/bin/sfml-system-2.dll"
             $<TARGET_FILE_DIR:Gaianox>)
 endif()
