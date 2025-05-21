@@ -20,7 +20,6 @@ public:
 		this->type = type;
 		textureManager = tex;
 		if (type == 1) {
-			cout<<"Getting Textures for type: "<<type<<endl;
 			animation.setTexture(textureManager->getTexture("Tiles/test.png"));
 			animation.setFrameCount(1);
 		}
@@ -34,9 +33,10 @@ public:
 		type = t;
 	}
 
-	void draw(RenderWindow& window, int x, int y) {
+	void draw(RenderWindow& window, int x, int y, Camera* cam) {
+		Position2f pos = cam->worldToScreen({(float)x, (float)y});
 		animation.applyToSprite(sprite);
-		sprite.setPosition(x, y);
+		sprite.setPosition(pos.x, pos.y);
 		window.draw(sprite);
 	}
 

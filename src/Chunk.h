@@ -8,25 +8,36 @@ class Chunk {
 
 public:
 	Chunk(Position2f p, TextureManager* tex) : pos{p.x, p.y} {
-		cout<<"Chunk created: "<<pos.x<<" "<<pos.y<<endl;
 		blocks = new Block * [14];
 		for (int i = 0; i < 14; i++) {
 			blocks[i] = new Block[8];
 		}
 
-		ifstream in("../Data/chunk.txt");
+		for (int j = 0; j < 8; j++) {  // columns
+			int groundHeight = getRandomNumber(4, 13);
 
-		int t = 0;
-		for (int i = 0; i < 14; i++) {
-			for (int j = 0; j < 8; j++) {
-				in >> t;
-				blocks[i][j].initialize(t, tex);
-				cout<<"setting block of type: "<<t<<endl;
+			for (int i = groundHeight; i < 14; i++) {
+				blocks[i][j].initialize(1, tex);
 			}
 		}
 
-		in.close();
 	}
+
+	Chunk(int x, TextureManager* tex, std::ifstream& in) {
+		pos = {(float)x, 0};
+		blocks = new Block * [14];
+		for (int i = 0; i < 14; ++i)
+			blocks[i] = new Block[8];
+
+		for (int i = 0; i < 14; ++i) {
+			for (int j = 0; j < 8; ++j) {
+				int type = 1;
+				in.read((char*)&type, sizeof(int));
+				blocks[i][j].initialize(type, tex);
+			}
+		}
+	}
+
 
 	~Chunk() {
 		for (int i = 0; i < 14; i++) {
@@ -43,14 +54,33 @@ public:
 		}
 	}
 
-	void draw(RenderWindow& window) {
+	void draw(RenderWindow& window, Camera* cam) {
 		for (int i = 0; i < 14; i++) {
 			for (int j = 0; j < 8; j++) {
 				if (blocks[i][j].getType() != 0) {
 					int x = (pos.x * 512) + (j * 64);
 					int y = i * 64;
-					blocks[i][j].draw(window, x, y);
+					blocks[i][j].draw(window, x, y, cam);
 				}
+			}
+		}
+	}
+
+	void saveToFile(std::ofstream& out) {
+		for (int i = 0; i < 14; ++i) {
+			for (int j = 0; j < 8; ++j) {
+				int type = blocks[i][j].getType();
+				out.write(reinterpret_cast<const char*>(&type), sizeof(int));
+			}
+		}
+	}
+
+	void loadFromFile(std::ifstream& in) {
+		for (int i = 0; i < 14; ++i) {
+			for (int j = 0; j < 8; ++j) {
+				int type;
+				in.read(reinterpret_cast<char*>(&type), sizeof(int));
+				blocks[i][j].setType(type);
 			}
 		}
 	}

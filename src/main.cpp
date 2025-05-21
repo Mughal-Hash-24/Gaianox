@@ -1,5 +1,5 @@
 #include <SFML/Graphics.hpp>
-#include "Chunk.h"
+#include "RenderedChunks.h"
 
 int main()
 {
@@ -7,10 +7,9 @@ int main()
 
     TextureManager textureManager;
 
-    Chunk* chunks[3];
-    chunks[0] = new Chunk(Position2f{ 0, 0 }, &textureManager);
-    chunks[1] = new Chunk(Position2f{ 1, 0 }, &textureManager);
-    chunks[2] = new Chunk(Position2f{ 2, 0 }, &textureManager);
+    Position2f playerPos{800, 450};
+    Camera camera(1600, 900, 100, 75);
+    RenderedChunks renderedChunks(&textureManager);
 
     while (window.isOpen())
     {
@@ -21,10 +20,27 @@ int main()
                 window.close();
         }
 
-        window.clear();
-        for (int i = 0; i < 3; i++) {
-            chunks[i]->draw(window);
+        if (Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+            playerPos.x += 1.f;
+            camera.update(playerPos);
+            renderedChunks.update(playerPos.x);
         }
+        else if (Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+            playerPos.x -= 1.f;
+            camera.update(playerPos);
+            renderedChunks.update(playerPos.x);
+        }
+        if (Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+            playerPos.y += 1.f;
+            camera.update(playerPos);
+        }
+        else if (Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+            playerPos.y -= 1.f;
+            camera.update(playerPos);
+        }
+
+        window.clear();
+        renderedChunks.draw(window, &camera);
         window.display();
     }
 
