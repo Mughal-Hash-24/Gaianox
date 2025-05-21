@@ -37,6 +37,7 @@ target_link_libraries(Gaianox PRIVATE
 )
 
 if(WIN32)
+    # Release DLLs
     add_custom_command(TARGET Gaianox POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
             "$ENV{SFML_ROOT}/bin/sfml-graphics-2.dll"
@@ -52,5 +53,23 @@ if(WIN32)
     add_custom_command(TARGET Gaianox POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
             "$ENV{SFML_ROOT}/bin/sfml-system-2.dll"
+            $<TARGET_FILE_DIR:Gaianox>)
+
+    # Debug DLLs (with -d)
+    add_custom_command(TARGET Gaianox POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "$ENV{SFML_ROOT}/bin/sfml-graphics-d-2.dll"
+            $<TARGET_FILE_DIR:Gaianox>)
+    add_custom_command(TARGET Gaianox POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "$ENV{SFML_ROOT}/bin/sfml-window-d-2.dll"
+            $<TARGET_FILE_DIR:Gaianox>)
+    add_custom_command(TARGET Gaianox POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "$ENV{SFML_ROOT}/bin/sfml-audio-d-2.dll"
+            $<TARGET_FILE_DIR:Gaianox>)
+    add_custom_command(TARGET Gaianox POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "$ENV{SFML_ROOT}/bin/sfml-system-d-2.dll"
             $<TARGET_FILE_DIR:Gaianox>)
 endif()
