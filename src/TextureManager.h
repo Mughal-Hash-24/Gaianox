@@ -23,7 +23,6 @@ TextureManager::TextureManager(int maxTextures) : textureCount(0), maxTextures(m
     textures = new Texture[maxTextures];  // Allocate memory for textures
     loaded = new bool[maxTextures] { false };  // Allocate memory and initialize to false
     names = new string[maxTextures];  // Allocate memory for texture names
-    cout<<"Manager Created"<<endl;
 }
 
 TextureManager::~TextureManager() {
@@ -43,7 +42,6 @@ Texture& TextureManager::getTexture(string filename) {
     // If not loaded yet, load the texture
     if (textureCount < maxTextures) {
         if (textures[textureCount].loadFromFile("../Data/" + filename)) {
-            cout<<"Loaded"<<endl;
             names[textureCount] = filename;  // Store the texture name
             loaded[textureCount] = true;     // Mark as loaded
             textureCount++;                  // Increment texture count

@@ -18,6 +18,7 @@ add_executable(Gaianox
         src/TextureManager.h
         src/Block.h
         src/Chunk.h
+        src/RenderedChunks.h
         # Add other source files here if any, e.g. src/Utilities.cpp
 )
 
