@@ -19,6 +19,8 @@ add_executable(Gaianox
         src/Block.h
         src/Chunk.h
         src/RenderedChunks.h
+        src/Game.h
+        src/MainMenu.h
         # Add other source files here if any, e.g. src/Utilities.cpp
 )
 

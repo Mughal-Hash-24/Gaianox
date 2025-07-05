@@ -1,5 +1,9 @@
+// --- RenderedChunks.h ---
 #pragma once
 #include "Chunk.h"
+#include <fstream>
+#include <string>
+#include <iostream>
 
 struct ChunkSlot {
     Chunk* chunk;
@@ -12,9 +16,11 @@ class RenderedChunks {
     ChunkSlot chunkSlots[9];
     int currCenterChunkX;
     TextureManager* textureManager;
+    std::string savePath;
 
 public:
-    RenderedChunks(TextureManager* tex) : currCenterChunkX(1), textureManager(tex) {
+    RenderedChunks(TextureManager* tex, const std::string& worldDir)
+        : currCenterChunkX(1), textureManager(tex), savePath(worldDir + "/Chunks") {
         for (int i = 0; i < 9; i++) {
             int x = i - 4;
             chunkSlots[i].x = x;
@@ -29,7 +35,6 @@ public:
 
         int shift = newCenterChunkX - currCenterChunkX;
 
-        // Player moved right
         while (shift > 0) {
             unloadLeftmost();
             shiftLeft();
@@ -40,7 +45,6 @@ public:
             shift--;
         }
 
-        // Player moved left
         while (shift < 0) {
             unloadRightmost();
             shiftRight();
@@ -61,7 +65,6 @@ public:
 
 private:
     void unloadLeftmost() {
-        cout<<"[LOG] Unloaded Left Most..."<<endl;
         Chunk* c = chunkSlots[0].chunk;
         int x = chunkSlots[0].x;
         if (c) {
@@ -71,9 +74,8 @@ private:
     }
 
     void unloadRightmost() {
-        cout<<"[LOG] Unloaded Right Most..."<<endl;
-        Chunk* c = chunkSlots[9 - 1].chunk;
-        int x = chunkSlots[9 - 1].x;
+        Chunk* c = chunkSlots[RENDERED_CHUNK_COUNT - 1].chunk;
+        int x = chunkSlots[RENDERED_CHUNK_COUNT - 1].x;
         if (c) {
             saveChunk(c, x);
             delete c;
@@ -91,24 +93,23 @@ private:
     }
 
     std::string getFileName(int x) {
-        return "../Data/Chunks/chunk_" + std::to_string(x) + "_0.bin";
+        return savePath + "/chunk_" + std::to_string(x) + "_0.bin";
     }
 
     Chunk* loadOrGenerateChunk(int x) {
-        cout<<"[LOG] Loading chunk: "<<getFileName(x)<<endl;
         std::string filename = getFileName(x);
         std::ifstream in(filename, std::ios::binary);
 
         if (in.is_open()) {
             Chunk* c = new Chunk(x, textureManager, in);
             in.close();
+            cout<<"[LOADED CHUNK]: "<<filename<<endl;
             return c;
         }
 
-        // File didn't exist — generate + save
-        cout<<"[LOG] Creating new chunk: "<<getFileName(x)<<endl;
         Chunk* c = new Chunk({(float)x, 0}, textureManager);
         std::ofstream out(filename, std::ios::binary);
+        cout<<"[GENERATED CHUNK]: "<<filename<<endl;
         if (out.is_open()) {
             c->saveToFile(out);
             out.close();
