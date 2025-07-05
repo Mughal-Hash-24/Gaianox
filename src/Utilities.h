@@ -40,7 +40,7 @@ public:
 Camera::Camera(float width, float height, float dzWidth, float dzHeight)
     : viewportWidth(width), viewportHeight(height),
       deadZoneWidth(dzWidth), deadZoneHeight(dzHeight) {
-    position = {0, 0};
+    position = {0, 3200};
 }
 
 void Camera::update(const Position2f& playerPos) {

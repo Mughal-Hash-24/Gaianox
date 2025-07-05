@@ -17,10 +17,11 @@ class RenderedChunks {
     int currCenterChunkX;
     TextureManager* textureManager;
     std::string savePath;
+    uint64_t seed;
 
 public:
-    RenderedChunks(TextureManager* tex, const std::string& worldDir)
-        : currCenterChunkX(1), textureManager(tex), savePath(worldDir + "/Chunks") {
+    RenderedChunks(TextureManager* tex, const std::string& worldDir, uint64_t seed)
+        : currCenterChunkX(1), textureManager(tex), savePath(worldDir + "/Chunks"), seed(seed) {
         for (int i = 0; i < 9; i++) {
             int x = i - 4;
             chunkSlots[i].x = x;
@@ -107,7 +108,7 @@ private:
             return c;
         }
 
-        Chunk* c = new Chunk({(float)x, 0}, textureManager);
+        Chunk* c = new Chunk({(float)x, 0}, textureManager, seed);
         std::ofstream out(filename, std::ios::binary);
         cout<<"[GENERATED CHUNK]: "<<filename<<endl;
         if (out.is_open()) {
