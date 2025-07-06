@@ -52,14 +52,22 @@ public:
 
 			int type = 0;
 			for (int i = groundHeight; i < 80; i++) {
-				if (blocks[i-1][j].getType() == 0 || blocks[i-2][j].getType() == 0)
+				if (blocks[i-1][j].getType() == 0 || blocks[i-2][j].getType() == 0) {
 					type = 2;
-				else if (blocks[i-3][j].getType() == 0 || blocks[i-4][j].getType() == 0 || blocks[i-5][j].getType() == 0)
+					if (i <= 30) type = 10;
+				}
+				else if (blocks[i-3][j].getType() == 0 || blocks[i-4][j].getType() == 0 || blocks[i-5][j].getType() == 0) {
 					type = getRandomNumber(3, 4);
+					if (i <= 30) type = 11;
+				}
 				else {
 					type = getRandomNumber(1, 20);
 					if (type <= 16) type = 5;
-					else type -= 11;
+					else {
+						type -= 11;
+						if (i <= 30)
+							type = 12;
+					}
 				}
 
 				cout<<type<<endl;

@@ -51,6 +51,18 @@ public:
 			animation.setTexture(textureManager->getTexture("Tiles/copper_ore.png"));
 			animation.setFrameCount(1);
 		}
+		else if (type == 10) {
+			animation.setTexture(textureManager->getTexture("Tiles/powder_snow.png"));
+			animation.setFrameCount(1);
+		}
+		else if (type == 11) {
+			animation.setTexture(textureManager->getTexture("Tiles/calcite.png"));
+			animation.setFrameCount(1);
+		}
+		else if (type == 12) {
+			animation.setTexture(textureManager->getTexture("Tiles/frosted_ice_0.png"));
+			animation.setFrameCount(1);
+		}
 	}
 
 	int getType() {
