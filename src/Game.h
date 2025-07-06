@@ -13,8 +13,12 @@ public:
     Game()
         : window(sf::VideoMode(1600, 900), "Gaianox"),
           playerPos{800, 3650},
-          camera(1600, 900, 100, 75)
-    {}
+          camera(1600, 900, 400, 300) {
+        playerRect.setSize(sf::Vector2f(32, 32));
+        playerRect.setFillColor(sf::Color::Yellow);
+        playerRect.setPosition(camera.worldToScreen(playerPos).x, camera.worldToScreen(playerPos).y);
+        window.setFramerateLimit(60);
+    }
 
     void run() {
         MainMenu menu(1600, 900);
@@ -85,29 +89,29 @@ private:
 
     void update() {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-            playerPos.x += 3.f;
-            camera.update(playerPos);
+            playerPos.x += 10.f;
             renderedChunks->update(playerPos.x);
         }
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-            playerPos.x -= 3.f;
-            camera.update(playerPos);
+            playerPos.x -= 10.f;
             renderedChunks->update(playerPos.x);
         }
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
-            playerPos.y += 3.f;
-            camera.update(playerPos);
+            playerPos.y += 10.f;
         }
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
-            playerPos.y -= 3.f;
-            camera.update(playerPos);
+            playerPos.y -= 10.f;
         }
+        playerRect.setPosition(camera.worldToScreen(playerPos).x, camera.worldToScreen(playerPos).y);
+        camera.update(playerPos);
     }
 
     void render() {
         window.clear(sf::Color(135, 206, 235));
         renderedChunks->draw(window, &camera);
+        camera.draw(window);
+        window.draw(playerRect);
         window.display();
     }
 
@@ -118,4 +122,5 @@ private:
     Position2f playerPos;
     std::string worldName;
     std::string worldPath;
+    sf::RectangleShape playerRect;
 };

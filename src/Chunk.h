@@ -44,8 +44,8 @@ public:
 			float terrain = baseHeight + pv_ * (0.5f - flatness);
 
 			// Map to height range, e.g., 0–100
-			int gH = 50 + int(terrain * 25);
-			int groundHeight = std::clamp(gH, 10, 70);;
+			int gH = 50 + int(terrain * 30);
+			int groundHeight = std::clamp(gH, 0, 60);;
 
 
 			cout<<groundHeight<<endl;
@@ -70,7 +70,7 @@ public:
 					}
 				}
 
-				cout<<type<<endl;
+				// cout<<type<<endl;
 
 				blocks[i][j].initialize(type, tex);
 			}

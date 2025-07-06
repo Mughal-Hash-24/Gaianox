@@ -32,6 +32,7 @@ public:
     void update(const Position2f& playerPos);
     Position2f worldToScreen(const Position2f& worldPos) const;
     bool isVisible(float worldX, float worldY, float width, float height) const;
+    void draw(RenderWindow& window);
 
     // Accessors
     Position2f getPosition() const;
@@ -52,17 +53,30 @@ void Camera::update(const Position2f& playerPos) {
     float topBound    = camCenterY - deadZoneHeight / 2.0f;
     float bottomBound = camCenterY + deadZoneHeight / 2.0f;
 
-    // Move camera only if player is outside dead zone
-    if (playerPos.x < leftBound) {
-        position.x -= (leftBound - playerPos.x);
-    } else if (playerPos.x > rightBound) {
-        position.x += (playerPos.x - rightBound);
-    }
+    float dx = 0, dy = 0;
 
-    if (playerPos.y < topBound) {
-        position.y -= (topBound - playerPos.y);
-    } else if (playerPos.y > bottomBound) {
-        position.y += (playerPos.y - bottomBound);
+    if (playerPos.x < leftBound)
+        dx = playerPos.x - leftBound;
+    else if (playerPos.x > rightBound)
+        dx = playerPos.x - rightBound;
+
+    if (playerPos.y < topBound)
+        dy = playerPos.y - topBound;
+    else if (playerPos.y > bottomBound)
+        dy = playerPos.y - bottomBound;
+
+    if (dx != 0 || dy != 0) {
+        // Move instantly when outside dead zone
+        position.x += dx;
+        position.y += dy;
+    } else {
+        // Player is inside dead zone — recentre slowly
+        float targetX = playerPos.x - viewportWidth / 2.0f;
+        float targetY = playerPos.y - viewportHeight / 2.0f;
+
+        // Smooth dampening — tweak factor (0.05f to 0.1f for smooth follow)
+        position.x += (targetX - position.x) * 0.02f;
+        position.y += (targetY - position.y) * 0.02f;
     }
 }
 
@@ -84,4 +98,19 @@ bool Camera::isVisible(float x, float y, float width, float height) const {
         y + height >= position.y &&
         y          <= position.y + viewportHeight
     );
+}
+
+void Camera::draw(RenderWindow& window) {
+    sf::RectangleShape rect(sf::Vector2f(deadZoneWidth, deadZoneHeight));
+
+    // Calculate dead zone top-left (centered in the viewport)
+    float screenX = (viewportWidth - deadZoneWidth) / 2.0f;
+    float screenY = (viewportHeight - deadZoneHeight) / 2.0f;
+
+    rect.setPosition(screenX, screenY); // Relative to screen
+    rect.setFillColor(sf::Color::Transparent);
+    rect.setOutlineColor(sf::Color::Red);
+    rect.setOutlineThickness(3.0f);
+
+    window.draw(rect);
 }
