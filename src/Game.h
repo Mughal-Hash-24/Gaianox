@@ -85,28 +85,28 @@ private:
 
     void update() {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-            playerPos.x += 5.f;
+            playerPos.x += 3.f;
             camera.update(playerPos);
             renderedChunks->update(playerPos.x);
         }
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-            playerPos.x -= 5.f;
+            playerPos.x -= 3.f;
             camera.update(playerPos);
             renderedChunks->update(playerPos.x);
         }
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
-            playerPos.y += 5.f;
+            playerPos.y += 3.f;
             camera.update(playerPos);
         }
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
-            playerPos.y -= 5.f;
+            playerPos.y -= 3.f;
             camera.update(playerPos);
         }
     }
 
     void render() {
-        window.clear();
+        window.clear(sf::Color(135, 206, 235));
         renderedChunks->draw(window, &camera);
         window.display();
     }

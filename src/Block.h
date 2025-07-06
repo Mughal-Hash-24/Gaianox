@@ -19,8 +19,36 @@ public:
 	void initialize(int type, TextureManager* tex) {
 		this->type = type;
 		textureManager = tex;
-		if (type == 1) {
-			animation.setTexture(textureManager->getTexture("Tiles/test.png"));
+		if (type == 5) {
+			animation.setTexture(textureManager->getTexture("Tiles/stone.png"));
+			animation.setFrameCount(1);
+		}
+		else if (type == 2) {
+			animation.setTexture(textureManager->getTexture("Tiles/moss_block.png"));
+			animation.setFrameCount(1);
+		}
+		else if (type == 3) {
+			animation.setTexture(textureManager->getTexture("Tiles/dirt.png"));
+			animation.setFrameCount(1);
+		}
+		else if (type == 4) {
+			animation.setTexture(textureManager->getTexture("Tiles/coarse_dirt.png"));
+			animation.setFrameCount(1);
+		}
+		else if (type == 6) {
+			animation.setTexture(textureManager->getTexture("Tiles/cobblestone.png"));
+			animation.setFrameCount(1);
+		}
+		else if (type == 7) {
+			animation.setTexture(textureManager->getTexture("Tiles/tuff.png"));
+			animation.setFrameCount(1);
+		}
+		else if (type == 8) {
+			animation.setTexture(textureManager->getTexture("Tiles/iron_ore.png"));
+			animation.setFrameCount(1);
+		}
+		else if (type == 9) {
+			animation.setTexture(textureManager->getTexture("Tiles/copper_ore.png"));
 			animation.setFrameCount(1);
 		}
 	}

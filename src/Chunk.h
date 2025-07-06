@@ -4,7 +4,7 @@
 
 #include "PerlinNoise.h"
 
-uint64_t hashString(const std::string& s) {
+inline uint64_t hashString(const std::string& s) {
 	uint64_t hash = 14695981039346656037ULL; // FNV-1a offset basis
 	for (char c : s) {
 		hash ^= static_cast<uint64_t>(c);
@@ -50,8 +50,21 @@ public:
 
 			cout<<groundHeight<<endl;
 
+			int type = 0;
 			for (int i = groundHeight; i < 80; i++) {
-				blocks[i][j].initialize(1, tex);
+				if (blocks[i-1][j].getType() == 0 || blocks[i-2][j].getType() == 0)
+					type = 2;
+				else if (blocks[i-3][j].getType() == 0 || blocks[i-4][j].getType() == 0 || blocks[i-5][j].getType() == 0)
+					type = getRandomNumber(3, 4);
+				else {
+					type = getRandomNumber(1, 20);
+					if (type <= 16) type = 5;
+					else type -= 11;
+				}
+
+				cout<<type<<endl;
+
+				blocks[i][j].initialize(type, tex);
 			}
 		}
 	}
@@ -82,7 +95,8 @@ public:
 	void update() {
 		for (int i = 0; i < 80; i++) {
 			for (int j = 0; j < 8; j++) {
-				blocks[i][j].update();
+				if (blocks[i][j].getType() != 0)
+					blocks[i][j].update();
 			}
 		}
 	}
