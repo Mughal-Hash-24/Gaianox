@@ -22,6 +22,8 @@ add_executable(Gaianox
         src/Game.h
         src/MainMenu.h
         src/PerlinNoise.h
+        src/Steve.h
+        src/Game.h
         # Add other source files here if any, e.g. src/Utilities.cpp
 )
 

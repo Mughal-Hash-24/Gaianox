@@ -64,7 +64,7 @@ public:
 
                 for (size_t i = 0; i < buttons.size(); ++i) {
                     if (buttons[i].isClicked(event, mousePos)) {
-                        return static_cast<Option>(i + 1);
+                        return static_cast<Option>(i);
                     }
                 }
             }
