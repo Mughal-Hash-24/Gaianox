@@ -15,9 +15,6 @@ int getRandomNumber(int min, int max) {
 	return dist(gen);
 }
 
-#pragma once
-#include "Block.h"
-
 class Camera {
 private:
     Position2f position; // Top-left of camera
@@ -114,3 +111,50 @@ void Camera::draw(RenderWindow& window) {
 
     window.draw(rect);
 }
+
+class Button {
+    Texture* defaultTexture;
+    Texture* hoverTexture;
+    Sprite sprite;
+
+public:
+    Button() : defaultTexture(nullptr), hoverTexture(nullptr) {}
+
+    void setTextures(Texture* dt, Texture* ht) {
+        defaultTexture = dt;
+        hoverTexture = ht;
+
+        sprite.setTexture(*defaultTexture);
+    }
+
+    void setPosition(float x, float y) {
+        sprite.setPosition(x, y);
+    }
+
+    void setSize(float width, float height) {
+        sprite.setScale(width / defaultTexture->getSize().x, height / defaultTexture->getSize().y);
+    }
+
+    bool isHovered(Vector2f mousePos) {
+        return sprite.getGlobalBounds().contains(mousePos);
+    }
+
+    bool isClicked(const Event& event, Vector2f mousePos) {
+        return event.type == Event::MouseButtonPressed &&
+               event.mouseButton.button == Mouse::Left &&
+                   isHovered(mousePos);
+    }
+
+    void update(Vector2f mousePos) {
+        if (isHovered(mousePos)) {
+            sprite.setTexture(*hoverTexture);
+        }
+        else {
+            sprite.setTexture(*defaultTexture);
+        }
+    }
+
+    void draw(RenderWindow& window) {
+        window.draw(sprite);
+    }
+};

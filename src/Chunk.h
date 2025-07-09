@@ -34,16 +34,16 @@ public:
 			float eros = erosion.noise((j + (p.x * 8)) * 0.01f, 2);            // Mid frequency = terrain smoothness
 			float pv_   = pv.noise((j + (p.x * 8)) * 0.025f, 4);       // High frequency = rough detail
 
-			// Normalize erosion to [0, 1] if needed
+			// Normalize erosion to [0, 1]
 			float flatness = (eros + 1.0f) * 0.5f;
 
-			// Flatten areas with high erosion
+			// Flatten areas with high erossion
 			float baseHeight = cont * (1.0f - flatness);
 
-			// Add peaks/valleys influence based on erosion level
+			// Add peaks/valleays influence based on erosion level
 			float terrain = baseHeight + pv_ * (0.5f - flatness);
 
-			// Map to height range, e.g., 0–100
+
 			int gH = 50 + int(terrain * 30);
 			int groundHeight = std::clamp(gH, 0, 60);;
 

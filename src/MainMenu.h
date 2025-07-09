@@ -1,54 +1,93 @@
-// --- MainMenu.h ---
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <string>
 #include <filesystem>
+#include "TextureManager.h"
+#include "Utilities.h"
 
 class MainMenu {
 public:
     enum Option { None, NewGame, LoadGame, Quit, Back };
 
-    MainMenu(float width, float height) {
-        font.loadFromFile("../Data/Fonts/RasterForgeRegular-JpBgm.ttf");
+    MainMenu(float width, float height, TextureManager* tex) : textureManager(tex) {
+        background.setTexture(textureManager->getTexture("UI/Background/bg_1.png"));
+        background.setPosition(0, 0);
+        background.setScale(
+            width / background.getLocalBounds().width,
+            height / background.getLocalBounds().height
+        );
 
-        optionsText = {
-            createText("New Game", width / 2, 300, 64),
-            createText("Load Game", width / 2, 400, 64),
-            createText("Quit",     width / 2, 500, 64)
-        };
+        logo.setTexture(textureManager->getTexture("UI/Text.png"));
+        logo.setPosition(width / 2 - logo.getGlobalBounds().width / 2, 100);
 
-        selectedIndex = 0;
-        updateHighlight();
+        // New Game Button
+        Button newGameBtn;
+        newGameBtn.setTextures(
+            &textureManager->getTexture("UI/Buttons/NewGame/NewGame_Default.png"),
+            &textureManager->getTexture("UI/Buttons/NewGame/NewGame_Hover.png")
+        );
+        newGameBtn.setPosition(width / 2 - 300, 350);
+        newGameBtn.setSize(600, 100);
+        buttons.push_back(newGameBtn);
+
+        // Load Game Button
+        Button loadGameBtn;
+        loadGameBtn.setTextures(
+            &textureManager->getTexture("UI/Buttons/LoadGame/LoadGame_Default.png"),
+            &textureManager->getTexture("UI/Buttons/LoadGame/LoadGame_Hover.png")
+        );
+        loadGameBtn.setPosition(width / 2 - 300, 470);
+        loadGameBtn.setSize(600, 100);
+        buttons.push_back(loadGameBtn);
+
+        // Quit Button
+        Button quitBtn;
+        quitBtn.setTextures(
+            &textureManager->getTexture("UI/Buttons/Quit/Quit_Default.png"),
+            &textureManager->getTexture("UI/Buttons/Quit/Quit_Hover.png")
+        );
+        quitBtn.setPosition(width / 2 - 300, 590);
+        quitBtn.setSize(600, 100);
+        buttons.push_back(quitBtn);
     }
 
     Option run(sf::RenderWindow& window) {
         sf::Event event;
+
         while (window.isOpen()) {
+            sf::Vector2f mousePos = (sf::Vector2f)sf::Mouse::getPosition(window);
+
             while (window.pollEvent(event)) {
                 if (event.type == sf::Event::Closed)
                     return Quit;
 
-                if (event.type == sf::Event::KeyPressed) {
-                    if (event.key.code == sf::Keyboard::Up)
-                        moveUp();
-                    else if (event.key.code == sf::Keyboard::Down)
-                        moveDown();
-                    else if (event.key.code == sf::Keyboard::Enter)
-                        return getSelectedOption();
+                for (size_t i = 0; i < buttons.size(); ++i) {
+                    if (buttons[i].isClicked(event, mousePos)) {
+                        return static_cast<Option>(i + 1);
+                    }
                 }
             }
 
+            for (auto& button : buttons)
+                button.update(mousePos);
+
             window.clear();
-            for (const auto& text : optionsText)
-                window.draw(text);
+            window.draw(background);
+            window.draw(logo);
+            for (auto& button : buttons)
+                button.draw(window);
             window.display();
         }
+
         return None;
     }
 
     std::string promptWorldName(sf::RenderWindow& window) {
         std::string worldName;
+        sf::Font font;
+        font.loadFromFile("../Data/Fonts/RasterForgeRegular-JpBgm.ttf");
+
         sf::Text prompt("Enter World Name: ", font, 30);
         prompt.setPosition(100, 100);
 
@@ -63,20 +102,20 @@ public:
         while (window.isOpen()) {
             sf::Event event;
             while (window.pollEvent(event)) {
-                if (event.type == sf::Event::Closed)
-                    return "";
+                if (event.type == sf::Event::Closed) return "";
 
                 if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
-                    return ""; // Go back
+                    return "";
 
                 if (event.type == sf::Event::TextEntered) {
-                    if (event.text.unicode == 8 && !worldName.empty()) // Backspace
+                    if (event.text.unicode == 8 && !worldName.empty()) {
                         worldName.pop_back();
-                    else if ((event.text.unicode == 13 || event.text.unicode == '\n') && !std::all_of(worldName.begin(), worldName.end(), isspace)) // Enter
+                    } else if ((event.text.unicode == 13 || event.text.unicode == '\n') &&
+                               !std::all_of(worldName.begin(), worldName.end(), [](unsigned char c) { return std::isspace(c); })) {
                         return worldName;
-                    else if (event.text.unicode < 128 && isalnum(event.text.unicode))
+                    } else if (event.text.unicode < 128 && std::isalnum(event.text.unicode)) {
                         worldName += static_cast<char>(event.text.unicode);
-
+                    }
                     inputText.setString(worldName);
                 }
             }
@@ -87,10 +126,14 @@ public:
             window.draw(backHint);
             window.display();
         }
+
         return "";
     }
 
     std::string chooseWorldToLoad(sf::RenderWindow& window) {
+        sf::Font font;
+        font.loadFromFile("../Data/Fonts/RasterForgeRegular-JpBgm.ttf");
+
         std::vector<std::string> saves;
         std::string basePath = "../Data/Saves";
 
@@ -129,9 +172,8 @@ public:
                 }
             }
 
-            for (size_t i = 0; i < saveTexts.size(); ++i) {
+            for (size_t i = 0; i < saveTexts.size(); ++i)
                 saveTexts[i].setFillColor(i == selected ? sf::Color::Yellow : sf::Color::White);
-            }
 
             window.clear();
             window.draw(header);
@@ -139,50 +181,13 @@ public:
             window.draw(backHint);
             window.display();
         }
+
         return "";
     }
 
 private:
-    sf::Font font;
-    std::vector<sf::Text> optionsText;
-    int selectedIndex;
-
-    sf::Text createText(const std::string& str, float x, float y, int size = 36) {
-        sf::Text text;
-        text.setFont(font);
-        text.setString(str);
-        text.setCharacterSize(size);
-        text.setFillColor(sf::Color::White);
-        text.setPosition(x - text.getGlobalBounds().width / 2, y);
-        return text;
-    }
-
-    void moveUp() {
-        if (selectedIndex > 0) {
-            selectedIndex--;
-            updateHighlight();
-        }
-    }
-
-    void moveDown() {
-        if (selectedIndex < static_cast<int>(optionsText.size()) - 1) {
-            selectedIndex++;
-            updateHighlight();
-        }
-    }
-
-    void updateHighlight() {
-        for (size_t i = 0; i < optionsText.size(); ++i) {
-            optionsText[i].setFillColor(i == selectedIndex ? sf::Color::Yellow : sf::Color::White);
-        }
-    }
-
-    Option getSelectedOption() const {
-        switch (selectedIndex) {
-            case 0: return NewGame;
-            case 1: return LoadGame;
-            case 2: return Quit;
-            default: return None;
-        }
-    }
+    TextureManager* textureManager;
+    sf::Sprite background;
+    sf::Sprite logo;
+    std::vector<Button> buttons;
 };
